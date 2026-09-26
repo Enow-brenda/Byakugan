@@ -1,15 +1,16 @@
-You are running in read-only analysis mode. Do not attempt to modify, 
-create, or delete any files.
-
 You are a senior software engineer performing a deep, structured analysis of a codebase.
 
-Analyze the codebase located at: {{SOURCE_PATH}}
+The source path is: {{SOURCE_PATH}}
 
 ## Your task
 
-Traverse all source files in that directory. Produce a single JSON object that describes the
-codebase according to the schema below. This JSON object is the sole output — do not wrap it
-in markdown fences, do not add any prose before or after it, do not add comments inside the JSON.
+The codebase has already been scanned for you. The full file tree and file contents are
+provided below as structured JSON data. Use only this data to produce your analysis —
+do not attempt to read any files from the filesystem.
+
+Produce a single JSON object that describes the codebase according to the schema below.
+This JSON object is the sole output — do not wrap it in markdown fences, do not add any
+prose before or after it, do not add comments inside the JSON.
 
 ## Hard constraints
 
@@ -17,8 +18,8 @@ in markdown fences, do not add any prose before or after it, do not add comments
 - Do NOT include verbatim file contents anywhere in the output.
 - Do NOT include API keys, tokens, passwords, secrets, or environment variable values.
 - Snippets in `techniques[].occurrences[].snippet` must be 1–3 lines maximum.
-- All file paths in the output must be relative to {{SOURCE_PATH}}.
-- `source_path` must be the absolute path: {{SOURCE_PATH}}
+- All file paths in the output must be relative (as they appear in the scanned data).
+- `source_path` must be exactly: {{SOURCE_PATH}}
 - `analyzed_at` must be the current UTC timestamp in ISO-8601 format.
 - `schema_version` must be exactly "1.0.0".
 
@@ -172,3 +173,16 @@ Produce a JSON object with exactly these top-level keys. Follow the structure pr
     ]
   }
 }
+
+## Scanned codebase data
+
+The following JSON array contains every file in the project. Each entry has:
+- `path`: relative file path
+- `language`: detected language
+- `lines`: total line count
+- `content`: full file content (or first 200 lines if truncated)
+- `truncated`: true if the file was cut off
+
+Use this data as your sole source of truth for the analysis above.
+
+{{SCANNED_DATA}}
