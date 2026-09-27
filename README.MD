@@ -423,7 +423,7 @@ byakugan/
 
 ## Built for the IBM Bob 2.0 Hackathon
 
-**Team:** Brenda & Naran
+**Team:** Brenda(@Enow-brenda) & Naran(@Naran121x)
 
 See [`bob_session/`](bob_session/) for the implementation plan and full session notes.
 
