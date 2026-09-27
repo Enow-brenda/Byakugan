@@ -109,7 +109,13 @@ function httpPostOnce(url, headers, body, timeoutMs) {
 // Retry-After when the provider sends one. Returns the parsed response.
 async function httpPost(url, headers, body, label, scope) {
   const billing = require('./billing');
-  const requestTokens = estimateTokens(body);
+  // Groq's TPM limit is charged on input PLUS the output reservation, not just
+  // what we send. Reserving only the input made the ledger believe a request fit
+  // when it did not, so the provider rejected it and we had burned a round trip
+  // finding out. maxTokens is passed by the caller because only the provider
+  // module knows which option actually ended up in the body.
+  const outputReserve = Number.isFinite(body && body.max_tokens) ? body.max_tokens : 0;
+  const requestTokens = estimateTokens(body) + outputReserve;
   const reservation = await billing.reserve(scope, requestTokens, label);
 
   let lastError;
@@ -128,10 +134,26 @@ async function httpPost(url, headers, body, label, scope) {
     } catch (err) {
       lastError = err;
 
+      // F3: a 413 reaching this point is always the PROVIDER's, never ours.
+      // checkRequestSize throws the BudgetError from billing.reserve() before
+      // the loop starts, so an in-loop 413 came back from Groq — and Groq uses
+      // 413 to mean TPM overflow, which IS satisfiable once the minute rolls
+      // over. Treating it as fatal is what made this wedge on the first
+      // oversized batch. It waits out a real TPM window rather than the usual
+      // backoff, because a few hundred milliseconds changes nothing here.
+      if (err.statusCode === 413) {
+        err.retryable = true;
+        err.retryAfter = Number.isFinite(err.retryAfter) && err.retryAfter > 0
+          ? err.retryAfter
+          : 60;
+      }
+
       const retryable = err.retryable || isRetryable(err.statusCode);
       if (!retryable || attempt === config.maxAttempts) break;
 
-      const backoff = Math.min(RETRY_BASE_MS * Math.pow(2, attempt - 1), RETRY_MAX_MS);
+      const backoff = err.statusCode === 413
+        ? 0
+        : Math.min(RETRY_BASE_MS * Math.pow(2, attempt - 1), RETRY_MAX_MS);
       const wait = Number.isFinite(err.retryAfter) && err.retryAfter > 0
         ? err.retryAfter * 1000
         : backoff + Math.floor(Math.random() * 250);
@@ -149,15 +171,31 @@ async function httpPost(url, headers, body, label, scope) {
   log.reportProviderError(scope, label, lastError);
 
   const attemptsUsed = attempts === 1 ? '1 attempt' : `${attempts} attempts`;
+
+  // checkRequestSize owns the "this can never be paced" wording, because it is
+  // the only place that knows the request exceeded the entire per-minute budget
+  // on its own. Reaching the hint below means the provider complained instead.
   const rateLimited = lastError.statusCode === 413 || lastError.statusCode === 429;
   const hint = rateLimited
-    ? `\n  Hint: the ~${requestTokens.toLocaleString()}-token request exceeded the ` +
-      `${config.tpmLimit.toLocaleString()}-token/min budget.`
+    ? `\n  Hint: the request needs ~${requestTokens.toLocaleString()} tokens ` +
+      `(input plus the ${outputReserve.toLocaleString()}-token output reservation) ` +
+      `against a ${config.tpmLimit.toLocaleString()}-token/min limit. ` +
+      'Lower BATCH_CHAR_BUDGET on the CLI or raise LLM_TPM_LIMIT here.'
     : lastError.hint
       ? `\n  Hint: ${lastError.hint}`
       : '';
 
-  throw new Error(`${label} failed after ${attemptsUsed}: ${lastError.message}${hint}`);
+  // F1: the status code used to be dropped here, so the router's
+  // `err.statusCode || 502` turned every provider 413 into a 502. The client saw
+  // a 5xx, judged it retryable, and hammered a request that could never work,
+  // printing the provider's raw body each time. Carrying the real status keeps
+  // the router's mapping honest and lets the client stop retrying.
+  const err = new Error(`${label} failed after ${attemptsUsed}: ${lastError.message}${hint}`);
+  err.statusCode = lastError.statusCode;
+  err.retryAfter = lastError.retryAfter;
+  err.hint = lastError.hint;
+  err.retryable = lastError.retryable;
+  throw err;
 }
 
 // Opens a streaming request. `onDelta` receives text fragments as they arrive;

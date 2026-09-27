@@ -59,21 +59,33 @@ function chatSystemPrompt(variables) {
   return parts.join('\n\n');
 }
 
+// The three analysis passes declare an explicit output cap instead of inheriting
+// config.maxCompletionTokens (16,000). A rate-limited provider charges the
+// reservation whether or not the model uses it, so a 16k reservation on top of a
+// full input batch could not fit inside an 8,000 token/minute budget no matter
+// how small the batch was. 4,096 is comfortably more than a per-file JSON record
+// needs, and leaves real headroom for the input.
+//
+// The comment is here rather than only in the README because this number and
+// LLM_TPM_LIMIT are two halves of one budget: changing one without the other is
+// how a batch pass starts failing on TPM again.
+const ANALYSIS_MAX_COMPLETION_TOKENS = 4096;
+
 const TASKS = {
   analyze_survey: {
     prompt: 'analyze_survey.md',
     variables: ['SOURCE_PATH', 'TOTAL_FILES', 'TOTAL_LINES', 'FILE_INVENTORY', 'MANIFEST_DATA'],
-    options: { json: true },
+    options: { json: true, maxCompletionTokens: ANALYSIS_MAX_COMPLETION_TOKENS },
   },
   analyze_files: {
     prompt: 'analyze_files.md',
     variables: ['SOURCE_PATH', 'BATCH_INDEX', 'BATCH_COUNT', 'BATCH_FILE_COUNT', 'BATCH_DATA'],
-    options: { json: true },
+    options: { json: true, maxCompletionTokens: ANALYSIS_MAX_COMPLETION_TOKENS },
   },
   analyze_synthesize: {
     prompt: 'analyze_synthesize.md',
     variables: ['SOURCE_PATH', 'DIGEST'],
-    options: { json: true },
+    options: { json: true, maxCompletionTokens: ANALYSIS_MAX_COMPLETION_TOKENS },
   },
   explain: {
     prompt: 'explain.md',

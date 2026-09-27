@@ -21,7 +21,7 @@ const trace = require('./trace');
 
 const PROTOCOL = 1;
 
-const DEFAULT_BASE_URL = process.env.BYAKUGAN_API_URL || 'http://127.0.0.1:3000';
+const DEFAULT_BASE_URL = process.env.BYAKUGAN_API_URL || 'https://byakugan-ehsv.onrender.com/';
 
 const REQUEST_TIMEOUT_MS = Number(process.env.BYAKUGAN_TIMEOUT_MS) || 180000;
 const MAX_ATTEMPTS = Number(process.env.BYAKUGAN_MAX_ATTEMPTS) || 4;

@@ -619,9 +619,22 @@ async function analyze(targetPath, options = {}) {
   ui.table([
     ['selected', plan.filesSelected + ' files → ' + plan.batchCount +
       ' batch' + (plan.batchCount === 1 ? '' : 'es')],
+    // Per-batch passes, and now including the fixed prompt, so the number can be
+    // compared against a real tokens-per-minute limit.
     ['input', '~' + plan.estimatedInputTokens.toLocaleString() + ' tokens'],
     ['llm calls', String(batches.length + 2)],
   ], { labelWidth: 10 });
+
+  if (plan.filesClamped > 0) {
+    // Not a failure, but it does mean the model saw less of these files than
+    // exists on disk. Saying so beats a report that quietly describes a prefix.
+    ui.warn(ui.plural(plan.filesClamped, 'file') + ' too large for one request', {
+      indent: ui.FIELD,
+      detail: 'analysed up to ' +
+        Number(batching.BATCH_CHAR_BUDGET).toLocaleString() + ' serialized chars; ' +
+        'raise BATCH_CHAR_BUDGET to see more',
+    });
+  }
 
   if (plan.filesDropped > 0) {
     ui.warn(ui.plural(plan.filesDropped, 'file') + ' dropped by budget', {

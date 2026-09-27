@@ -206,18 +206,64 @@ async function handleHealth(res, deep) {
   });
 }
 
-// Provider and validation failures are flattened to a single short line. The
-// client prints this to a terminal, and a raw provider body can carry hostnames,
-// request ids, or account detail that is nobody else's business.
+// Groq/HF organisation and project ids. The replacement deliberately does not
+// repeat the `org_` prefix: a redacted id that still looks like a real one is
+// confusing to grep for and easy to mistake for something unhandled.
+const PROVIDER_SECRETS = [
+  { re: /\borg_[A-Za-z0-9]{8,}\b/g, as: '[redacted:org-id]' },
+  { re: /\b(?:org|proj|billing|account)[_-]?[A-Za-z0-9]{10,}\b/gi, as: '[redacted]' },
+  { re: /\bsk-[A-Za-z0-9_-]{8,}\b/g, as: '[redacted:key]' },
+  { re: /\b(?:gsk|hf|r8|pk)[_-][A-Za-z0-9]{12,}\b/g, as: '[redacted:key]' },
+  { re: /\bBearer\s+[A-Za-z0-9._-]{8,}\b/gi, as: '[redacted]' },
+];
+
+function sanitizeProviderText(text) {
+  let out = String(text);
+  for (const { re, as } of PROVIDER_SECRETS) out = out.replace(re, as);
+  return out;
+}
+
+// Pulls the human-readable `message` out of a provider body, or falls back to the
+// bare first line.
+function readableMessage(text) {
+  const quoted = /"message"\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(text);
+  if (quoted) {
+    try {
+      return JSON.parse('"' + quoted[1] + '"');
+    } catch {
+      return quoted[1];
+    }
+  }
+  return text;
+}
+
+// Reduces one `HTTP nnn: {json}` fragment to its message. The fragment is not
+// anchored to the start of the string: the client-facing message is prefixed
+// with "analyze_files failed after 1 attempt:" and followed by our own hint, so
+// an anchored match silently missed every real provider error and passed the raw
+// body through. That is how an org id reached a terminal.
+function reduceProviderFragment(line) {
+  const m = /HTTP (\d{3}):\s*(\{.*\})\s*$/.exec(line);
+  if (!m) return line;
+  return line.slice(0, m.index) + `HTTP ${m[1]}: ` + readableMessage(m[2]);
+}
+
 function describeError(err) {
   if (!err) return 'Unknown error';
 
-  if (err.statusCode === 413) return err.message;
-  if (err.statusCode === 429) return err.message;
-  if (err.statusCode === 400) return err.message;
+  const raw = sanitizeProviderText(err.message || 'Unknown error');
 
-  const first = String(err.message || '').split('\n')[0];
-  return first.length > 300 ? first.slice(0, 300) + '…' : first;
+  // Provider JSON is collapsed; our own text (the label, the attempt count, the
+  // hint) is kept, because the hint is where the fix is and dropping it was the
+  // other half of the original bug.
+  const text = raw
+    .split('\n')
+    .map(line => reduceProviderFragment(line.trim()))
+    .filter(Boolean)
+    .join('\n');
+
+  const flat = text.length > 400 ? text.slice(0, 400) + '…' : text;
+  return flat;
 }
 
 function createServer() {

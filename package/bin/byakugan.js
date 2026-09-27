@@ -191,7 +191,10 @@ program
       ['embedding model', (probe.models && probe.models.embed) || 'unknown'],
       ['max files', String(batching.MAX_FILES)],
       ['max content chars', batching.MAX_CONTENT_CHARS.toLocaleString()],
-      ['batch budget', batching.BATCH_CHAR_BUDGET.toLocaleString()],
+      // Says "serialized" because that is what the number now measures. Calling
+      // it a raw char budget is what made the old value look far more generous
+      // than the request it actually produced.
+      ['batch budget', batching.BATCH_CHAR_BUDGET.toLocaleString() + ' serialized'],
     ], { labelWidth: 17 });
 
     // The rows below belong to the backend, not to this process. Labelling them
