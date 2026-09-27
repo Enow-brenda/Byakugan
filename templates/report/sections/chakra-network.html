@@ -1,19 +1,58 @@
-<section id="chakra-network" class="section">
-  <h2>Chakra Network</h2>
-  <p class="section-desc">Dependency graph &mdash; nodes are modules, classes, or functions; edges show how they connect.</p>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Node</th><th>Type</th><th>File</th><th>Connects To</th></tr></thead>
-      <tbody>
-        {{#each nodes}}
-        <tr>
-          <td><code>{{label}}</code></td>
-          <td><span class="badge badge-{{type}}">{{type}}</span></td>
-          <td>{{#if file}}{{file}}{{else}}&mdash;{{/if}}</td>
-          <td>{{#if deps}}{{#each deps}}{{#unless @first}}, {{/unless}}<code>{{label}}</code> <span class="edge-kind">{{kind}}</span>{{/each}}{{else}}&mdash;{{/if}}</td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
+<section id="chakra-network" class="section" aria-labelledby="chakra-h">
+  <div class="section-head">
+    <div class="eyebrow">Dossier 02</div>
+    <h2 id="chakra-h">Chakra Flow</h2>
+    <p class="section-desc">The dependency graph. Hover a node to light everything it touches; click to pin it, drag to pan, scroll to zoom. Every edge here is a real import, call, or inheritance in the code.</p>
+  </div>
+
+  <div class="graph-shell">
+    <div class="graph-bar">
+      <div class="seg" role="group" aria-label="Graph or table">
+        <button type="button" id="graphViewGraph" aria-pressed="true">Graph</button>
+        <button type="button" id="graphViewTable" aria-pressed="false">Table</button>
+      </div>
+      <div class="graph-legend">
+        <span class="legend-item"><span class="legend-glyph" style="background: var(--iris-1)"></span>module</span>
+        <span class="legend-item"><span class="legend-glyph" style="background: var(--r3)"></span>class</span>
+        <span class="legend-item"><span class="legend-glyph" style="background: var(--r2)"></span>function</span>
+        <span class="legend-item"><span class="legend-glyph" style="background: var(--chakra)"></span>external</span>
+      </div>
+      <span class="topbar-spacer"></span>
+      <button class="icon-btn" id="graphReset" type="button">Reset view</button>
+    </div>
+
+    <div class="graph-canvas" id="graphCanvas">
+      <div class="graph-tip" id="graphTip" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="graph-note" id="graphNote">
+      Showing {{shownCount}} of {{totalCount}} nodes and {{edgeCount}} edges.
+      {{#if hiddenCount}}The busiest nodes win the cut, so the shape survives; the table below lists everything.{{/if}}
+    </div>
+
+    <div class="table-wrap" id="graphTable" hidden>
+      <table>
+        <thead>
+          <tr><th>Node</th><th>Type</th><th>File</th><th>Links</th><th>Connects To</th></tr>
+        </thead>
+        <tbody>
+          {{#each nodes}}
+          <tr>
+            <td><code>{{label}}</code></td>
+            <td><span class="badge badge-{{type}}">{{type}}</span></td>
+            <td>{{#if file}}<code>{{file}}</code>{{else}}&mdash;{{/if}}</td>
+            <td>{{degree}}</td>
+            <td>
+              {{#if deps}}
+              {{#each deps}}
+              <span class="dep"><code>{{label}}</code> <span class="edge-kind kind-{{kind}}">{{kind}}</span></span>
+              {{/each}}
+              {{else}}&mdash;{{/if}}
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
   </div>
 </section>

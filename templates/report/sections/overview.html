@@ -1,20 +1,46 @@
-<section id="overview" class="section">
-  <h2>Overview</h2>
-  {{#if intentNote}}
-  <p class="intent-note">{{intentNote}}</p>
-  {{/if}}
-  <div class="card-grid">
-    {{#each cards}}
-    <div class="card"><span class="label">{{label}}</span><span class="value">{{{value}}}</span></div>
+<section id="overview" class="section" aria-labelledby="overview-h">
+  <div class="section-head">
+    <div class="eyebrow">Dossier 01</div>
+    <h2 id="overview-h">Mission Dossier</h2>
+    <p class="section-desc">What this project is, what it is made of, and where to put your hands first.</p>
+  </div>
+
+  <div class="mission">
+    <span class="mission-code">{{mission.code}}</span>
+    <div>
+      <div class="mission-text">{{mission.directive}}</div>
+      {{#if intentNote}}<div class="mission-note">{{intentNote}}</div>{{/if}}
+    </div>
+  </div>
+
+  <div class="ladder" data-level-pct="{{levelPct}}">
+    {{#each ladder}}
+    <div class="rung{{#if current}} is-current{{/if}}{{#if reached}} is-reached{{/if}}" style="--tone: var(--{{tone}})">
+      <div class="rung-name">{{name}}</div>
+      <div class="rung-rank">{{rank}}</div>
+    </div>
     {{/each}}
   </div>
-  <div class="summary">{{{summary}}}</div>
-  {{#if entryPoints}}
-  <h3>Entry Points</h3>
-  <ul>
-    {{#each entryPoints}}
-    <li><code>{{.}}</code></li>
+
+  <div class="card-grid">
+    {{#each cards}}
+    <div class="card stagger"><span class="label">{{label}}</span><span class="value">{{{value}}}</span></div>
     {{/each}}
-  </ul>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Field Report</div>
+    <div class="md">{{{summary}}}</div>
+  </div>
+
+  {{#if entryPoints}}
+  <div class="panel">
+    <div class="panel-title">Where To Start</div>
+    <div class="entry-list">
+      {{#each entryPoints}}
+      <span class="entry-chip"><code>{{.}}</code></span>
+      {{/each}}
+    </div>
+  </div>
   {{/if}}
 </section>

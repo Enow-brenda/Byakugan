@@ -70,16 +70,17 @@ program
   .description('Generate an HTML report from analysis.json')
   .option('-o, --output <path>', 'Output file path (default: <project>/.byakugan/report.html)')
   .option('-p, --project <path>', 'Project directory to read (default: current directory)')
+  .option('--no-open', 'Write the report without opening it in a browser')
   .action(command('report', async (options) => {
     const { generateReport } = require('../lib/reporter');
-    // reporter.js owns the "saved" line so the library and the CLI agree; the
-    // entrypoint only adds the footer.
-    const outFile = await generateReport(options.output, options.project);
+    // reporter.js owns both the "saved" line and the browser hand-off, so the
+    // library and the CLI always agree about what happened. Commander turns
+    // --no-open into options.open === false; that is the only thing passed on.
+    const outFile = await generateReport(options.output, options.project, { open: options.open });
     ui.end({
-      next: [
-        ['start ' + outFile, 'open it in your browser'],
-        ['byakugan chat', 'ask questions about this code'],
-      ],
+      next: options.open === false
+        ? [['start ' + outFile, 'open it in your browser'], ['byakugan chat', 'ask questions about this code']]
+        : [['byakugan chat', 'ask questions about this code']],
     });
   }));
 

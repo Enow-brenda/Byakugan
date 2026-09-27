@@ -1,27 +1,47 @@
-<section id="files" class="section">
-  <h2>Files</h2>
+<section id="files" class="section" aria-labelledby="registry-h">
+  <div class="section-head">
+    <div class="eyebrow">Dossier 05</div>
+    <h2 id="registry-h">Shinobi Registry</h2>
+    <p class="section-desc">Every file in the scan, what it is for, and how hard it is. Click a column heading to sort; use the filter box to narrow the list.</p>
+  </div>
+
   <div class="table-wrap">
-    <table>
+    <table id="fileTable">
       <thead>
         <tr>
-          <th>Path</th><th>Language</th><th>Lines</th><th>Purpose</th><th>Complexity</th>
-          {{#if showExports}}<th>Exports</th>{{/if}}
+          <th class="sortable" data-sort="path" scope="col">Path</th>
+          <th class="sortable" data-sort="language" scope="col">Language</th>
+          <th class="sortable" data-sort="lines" scope="col">Lines</th>
+          <th scope="col">Purpose</th>
+          <th class="sortable" data-sort="complexity" scope="col">Complexity</th>
+          {{#if showExports}}<th scope="col">Exports</th>{{/if}}
         </tr>
       </thead>
       <tbody>
         {{#each files}}
         <tr>
-          <td><code>{{path}}</code></td>
-          <td>{{language}}</td>
-          <td>{{lines}}</td>
-          <td>{{{purpose}}}</td>
-          <td><span class="complexity-badge complexity-{{complexity}}">{{complexity}}</span></td>
+          <td class="is-primary" data-label="Path"><code>{{path}}</code></td>
+          <td data-label="Language">{{language}}</td>
+          <td data-value="{{lines}}" data-label="Lines">{{lines}}</td>
+          <td data-label="Purpose">{{{purpose}}}</td>
+          <td data-value="{{complexity}}" data-label="Complexity">
+            <span class="complexity-badge complexity-{{complexity}}">{{complexity}}</span>
+            <span class="meter {{complexity}}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="sr-only">{{complexity}} complexity</span>
+          </td>
           {{#if showExports}}
-          <td>{{#if exports}}{{#each exports}}{{#unless @first}}, {{/unless}}<code title="{{signature}}">{{name}}</code>{{/each}}{{else}}&mdash;{{/if}}</td>
+          <td data-label="Exports">
+            {{#if exports}}
+            {{#each exports}}
+            <code class="file-ref" title="{{signature}}">{{name}}</code>
+            {{/each}}
+            {{else}}&mdash;{{/if}}
+          </td>
           {{/if}}
         </tr>
         {{/each}}
       </tbody>
     </table>
   </div>
+  <div class="empty-note" id="fileEmpty" hidden>No file matches that filter.</div>
 </section>

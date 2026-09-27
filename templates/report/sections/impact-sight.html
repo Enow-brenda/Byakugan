@@ -1,27 +1,31 @@
-<section id="impact-sight" class="section">
-  <h2>Impact Sight</h2>
-  <p class="section-desc">Change risk, hotspots, and dependency exposure.</p>
+<section id="impact-sight" class="section" aria-labelledby="fovea-h">
+  <div class="section-head">
+    <div class="eyebrow">Dossier 04</div>
+    <h2 id="fovea-h">Fovea Vision</h2>
+    <p class="section-desc">What breaks first, and what is tied to the outside world. Read this before you change anything.</p>
+  </div>
 
   {{#if hotspots}}
-  <h3>Hotspots</h3>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>File</th><th>Reason</th><th>Risk</th></tr></thead>
-      <tbody>
-        {{#each hotspots}}
-        <tr>
-          <td><code>{{file}}</code></td>
-          <td>{{{reason}}}</td>
-          <td><span class="risk-badge risk-{{risk}}">{{risk}}</span></td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
+  <div class="sub-head">Blast Radius</div>
+  {{#each hotspots}}
+  <div class="ring-card stagger" style="--risk: var(--{{risk}})">
+    <svg class="ring-art" viewBox="0 0 60 60" aria-hidden="true" focusable="false">
+      <circle cx="30" cy="30" r="27" stroke="var(--line)" stroke-width="1.5"/>
+      <circle cx="30" cy="30" r="19" stroke="var(--risk)" stroke-width="1.5" opacity="0.55"/>
+      <circle cx="30" cy="30" r="10" fill="none" stroke="var(--risk)" stroke-width="2"/>
+      <circle cx="30" cy="30" r="3.6" fill="var(--risk)"/>
+    </svg>
+    <div class="ring-body">
+      <div class="ring-file">{{file}}</div>
+      <div class="ring-reason">{{{reason}}}</div>
+    </div>
+    <span class="risk-badge risk-{{risk}}">{{risk}}</span>
   </div>
+  {{/each}}
   {{/if}}
 
   {{#if mutations}}
-  <h3>State Mutations</h3>
+  <div class="sub-head">Mutable State</div>
   <div class="table-wrap">
     <table>
       <thead><tr><th>File</th><th>Symbol</th><th>Scope</th></tr></thead>
@@ -39,7 +43,7 @@
   {{/if}}
 
   {{#if dependencies}}
-  <h3>External Dependencies</h3>
+  <div class="sub-head">Ropes to the Outside World</div>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Package</th><th>Type</th><th>Used In</th></tr></thead>
@@ -48,7 +52,11 @@
         <tr>
           <td><code>{{name}}</code></td>
           <td>{{type}}</td>
-          <td>{{#each usedIn}}{{#unless @first}}, {{/unless}}<code>{{.}}</code>{{/each}}</td>
+          <td>
+            {{#each usedIn}}
+            <code class="file-ref">{{.}}</code>
+            {{/each}}
+          </td>
         </tr>
         {{/each}}
       </tbody>

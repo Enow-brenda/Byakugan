@@ -1,0 +1,51 @@
+{{! Sidebar. The icons are app-generated path data and are the only raw values
+    here; every label and blurb comes from the model and stays escaped. }}
+<aside class="rail" id="rail">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="brandIris" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#c4b5fd"/>
+          <stop offset="1" stop-color="#818cf8"/>
+        </linearGradient>
+      </defs>
+      <path d="M2 20C7 9 33 9 38 20 33 31 7 31 2 20Z" fill="#0e1018" stroke="#2a2440" stroke-width="1.6"/>
+      <circle cx="20" cy="20" r="6.4" fill="url(#brandIris)"/>
+      <circle cx="20" cy="20" r="2.6" fill="#150f22"/>
+      <g stroke="#c0396b" stroke-width="1" fill="none" opacity="0.85">
+        <path d="M20 13.6V8M14.2 15.6 8.4 12M25.8 15.6 31.6 12M13 21.6H6M27 21.6H34"/>
+      </g>
+    </svg>
+    <div class="brand-text">
+      <div class="brand-name">{{projectName}}</div>
+      <div class="brand-sub">Byakugan</div>
+    </div>
+  </div>
+
+  <nav class="rail-scroll" aria-label="Report sections">
+    <div class="rail-label">Scroll</div>
+    {{#each items}}
+    <a class="rail-link stagger" href="#{{id}}" data-spy="{{id}}">
+      {{{icon}}}
+      <span class="rail-link-text">
+        <span class="rail-link-label">{{label}}</span>
+        <span class="rail-link-blurb">{{blurb}}</span>
+      </span>
+      {{#if count}}<span class="rail-count">{{count}}</span>{{/if}}
+    </a>
+    {{/each}}
+  </nav>
+
+  <div class="rail-foot">
+    <div class="rank-chip" style="--rank: var(--{{rankTone}})">
+      <span class="rank-dot"></span>
+      <span>Rank <b>{{rankName}}</b></span>
+    </div>
+    <div class="rail-progress">
+      <div class="rail-progress-track">
+        <div class="rail-progress-fill" id="railProgress" data-pct="{{levelPct}}"></div>
+      </div>
+      <div class="rail-progress-text" id="railProgressText">{{levelName}} &middot; {{level}} of {{levelMax}}</div>
+    </div>
+  </div>
+</aside>

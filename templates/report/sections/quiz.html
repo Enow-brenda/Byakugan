@@ -1,21 +1,41 @@
-<section id="quiz" class="section">
-  <h2>Quiz</h2>
-  <p class="section-desc">All {{total}} questions.{{#if tailored}} The {{tailored}} matching your
-  <strong>{{intent}}</strong> intent at <strong>{{levelName}}</strong> level are listed first.
-  {{else}} None are tailored to your <strong>{{intent}}</strong> intent at
-  <strong>{{levelName}}</strong> level yet.{{/if}}</p>
+<section id="quiz" class="section" aria-labelledby="dojo-h">
+  <div class="section-head">
+    <div class="eyebrow">Dossier 06</div>
+    <h2 id="dojo-h">The Dojo</h2>
+    <p class="section-desc">
+      All {{total}} questions. {{#if tailored}}The {{tailored}} written for a
+      <strong>{{intent}}</strong> reader at <strong>{{levelName}}</strong> level come first.{{else}}
+      None of these are tailored to your <strong>{{intent}}</strong> intent at
+      <strong>{{levelName}}</strong> level yet.{{/if}}
+    </p>
+  </div>
+
+  <div class="dojo-top">
+    <div class="dojo-score">Score <b id="dojoScore">0</b> / <span id="dojoTotal">{{total}}</span></div>
+    <div class="dojo-track"><div class="dojo-fill" id="dojoFill"></div></div>
+    <div class="dojo-score" id="dojoStreak"></div>
+  </div>
+
   <div class="quiz-list">
     {{#each questions}}
-    <div class="quiz-item" id="quiz-{{id}}">
-      <p class="quiz-q"><strong>Q{{number}}.</strong> {{{question}}}{{#if tailored}} <span class="badge">for you</span>{{/if}}</p>
+    <article class="quiz-item{{#if tailored}} is-tailored{{/if}} stagger" id="quiz-{{id}}" data-correct="{{correct}}">
+      <p class="quiz-q">
+        <span class="quiz-num">Q{{number}}</span>
+        <span>{{{question}}}</span>
+        {{#if tailored}}<span class="badge">for you</span>{{/if}}
+      </p>
+
       {{#if multipleChoice}}
       <ul class="quiz-options">
         {{#each options}}
-        <li class="quiz-opt" data-correct="{{correct}}" data-letter="{{letter}}">{{{text}}}</li>
+        <li class="quiz-opt" data-letter="{{letter}}" tabindex="0" role="button">
+          <span class="quiz-key">{{letter}}</span>
+          <span>{{{text}}}</span>
+        </li>
         {{/each}}
       </ul>
-      <div class="quiz-feedback" style="display:none">
-        <span class="correct-label">&#10003; Correct: {{correct}}</span>
+      <div class="quiz-feedback">
+        <span class="correct-label">&#10003; Correct answer: {{correct}}</span>
         {{#if showIdeal}}
         <div class="ideal-label">Ideal answer</div>
         <div class="quiz-ideal">{{{idealAnswer}}}</div>
@@ -25,16 +45,25 @@
       {{else}}
       <div class="quiz-short">
         <details>
-          <summary>Show ideal answer</summary>
+          <summary>Show the ideal answer</summary>
           <div class="quiz-ideal">{{{idealAnswer}}}</div>
           <div class="explanation">{{{explanation}}}</div>
         </details>
       </div>
       {{/if}}
+
       {{#if references}}
-      <p class="quiz-refs">References: {{#each references}}{{#unless @first}}, {{/unless}}<code>{{.}}</code>{{/each}}</p>
+      <p class="quiz-refs">
+        References:
+        {{#each references}}<code class="file-ref">{{.}}</code>{{/each}}
+      </p>
       {{/if}}
-    </div>
+    </article>
     {{/each}}
+  </div>
+
+  <div class="stamp" id="dojoStamp">
+    <span class="stamp-rank" id="dojoRank">{{rankName}}</span>
+    <span class="stamp-text" id="dojoVerdict">Answer every question to earn your stamp.</span>
   </div>
 </section>

@@ -1,37 +1,56 @@
-<section id="techniques" class="section">
-  <h2>Techniques</h2>
-  <p class="section-desc">Patterns, idioms, and notable code techniques found in this codebase.</p>
-  <div class="technique-grid">
+<section id="techniques" class="section" aria-labelledby="jutsu-h">
+  <div class="section-head">
+    <div class="eyebrow">Dossier 03</div>
+    <h2 id="jutsu-h">Jutsu Library</h2>
+    <p class="section-desc">Patterns, idioms, and techniques this codebase actually leans on, with the code that proves it.</p>
+  </div>
+
+  <div class="filter-bar" role="group" aria-label="Filter techniques by significance">
+    <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+    <button class="chip" type="button" data-filter="high" aria-pressed="false">Load bearing</button>
+    <button class="chip" type="button" data-filter="medium" aria-pressed="false">Structural</button>
+    <button class="chip" type="button" data-filter="low" aria-pressed="false">Incidental</button>
+  </div>
+
+  <div class="technique-grid" id="techniqueGrid">
     {{#each techniques}}
-    <div class="technique-card significance-{{significance}}">
+    <article class="technique-card sig-{{significance}} stagger" data-significance="{{significance}}" data-name="{{name}}">
       <div class="technique-header">
         <h3>{{{name}}}</h3>
-        <span class="badge badge-{{category}}">{{category}}</span>
-        {{#if sigBadge}}
-        <span class="sig-badge">{{sigBadge}}</span>
-        {{/if}}
+        <span class="badge">{{category}}</span>
+        {{#if sigBadge}}<span class="sig-badge sig-{{significance}}">{{sigBadge}}</span>{{/if}}
       </div>
-      {{#if detailed}}
-      <dl class="concept-card">
-        <dt>What it is</dt><dd>{{{whatItIs}}}</dd>
-        <dt>Why it matters</dt><dd>{{{whyItMatters}}}</dd>
-        <dt>Without it</dt><dd>{{{withoutIt}}}</dd>
+
+      <dl>
+        <dt>What it is</dt>
+        <dd>{{{whatItIs}}}</dd>
+        <dt>Why it matters</dt>
+        <dd>{{{whyItMatters}}}</dd>
+        {{#if detailed}}<dt>Without it</dt><dd>{{{withoutIt}}}</dd>{{/if}}
       </dl>
-      {{else}}
-      <div class="technique-blurb">{{{whatItIs}}}</div>
-      {{/if}}
+
       {{#if occurrences}}
-      <details>
-        <summary>Occurrences ({{occurrenceCount}})</summary>
-        {{#each occurrences}}
-        <div class="occurrence">
-          <code class="file-ref">{{file}}:{{line}}</code>
-          <pre class="snippet">{{snippet}}</pre>
-        </div>
-        {{/each}}
-      </details>
+      <div class="occurrence">
+        <details>
+          <summary>
+            <span class="caret" aria-hidden="true">&#9656;</span>
+            {{occurrenceCount}} in the code
+          </summary>
+          {{#each occurrences}}
+          <div class="copy-row">
+            <button class="copy-btn" type="button" data-copy="{{file}}:{{line}}">Copy path</button>
+            <div class="occurrence-head">
+              <code class="file-ref">{{file}}:{{line}}</code>
+            </div>
+            <pre class="snippet">{{snippet}}</pre>
+          </div>
+          {{/each}}
+        </details>
+      </div>
       {{/if}}
-    </div>
+    </article>
     {{/each}}
   </div>
+
+  <div class="empty-note" id="techniqueEmpty" hidden>No technique matches that filter.</div>
 </section>

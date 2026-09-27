@@ -19,7 +19,7 @@ Byakugan scans any codebase, sends it through a multi-pass LLM pipeline, and giv
 |---|---|
 | `byakugan profile` | 5 questions → saves your skill level + intent to `profile.json` |
 | `byakugan analyze <path>` | Multi-pass LLM analysis → `analysis.json` + `embeddings.json` |
-| `byakugan report` | Adaptive HTML report rendered from `analysis.json` |
+| `byakugan report` | Self-contained interactive HTML report, opened in your browser |
 | `byakugan explain <file>` | Deep plain-English explanation of one file, adapted to your level |
 | `byakugan impact <file>` | Structured change-impact analysis — what breaks if this file changes |
 | `byakugan chat` | RAG-powered interactive chat about the codebase |
@@ -208,8 +208,21 @@ Interactive 5-question setup. Saves your name, intent, skill level (Junior → G
 ### `byakugan analyze <path> [--max-files N] [--max-chars N]`
 Multi-pass LLM analysis. Produces `analysis.json` and `embeddings.json` inside `<path>/.byakugan/`. Automatically resumes if interrupted — partial pass results are cached in `.byakugan/partial/`.
 
-### `byakugan report [-o output.html] [-p project-path]`
-Renders a self-contained HTML report with overview, chakra network, techniques, impact sight, file table, and an interactive quiz. If `profile.json` is missing it asks first; if `analysis.json` is missing it offers to run analyze.
+### `byakugan report [-o output.html] [-p project-path] [--no-open]`
+Renders a self-contained HTML report and opens it in your browser. If `profile.json` is missing it asks first; if `analysis.json` is missing it offers to run analyze. Use `--no-open` in CI, or set `BYAKUGAN_NO_OPEN=1`, to write the file without launching anything.
+
+The report is one file with no external requests, so it works from disk, offline, and with scripts disabled. It opens with a Byakugan activation sequence, then:
+
+| Section | What it does |
+|---|---|
+| **Mission Dossier** | Stamped mission directive, your rank on a five-rung ladder, project cards, field report, entry points |
+| **Chakra Flow** | Interactive dependency graph. Hover to light everything a node touches, click to pin, drag to pan, scroll to zoom. Toggle to a table for the same data. |
+| **Jutsu Library** | Techniques with what-it-is / why-it-matters / without-it, plus the code that proves each one. Filter by load-bearing. |
+| **Fovea Vision** | Blast radius per file, mutable state, and the ropes to the outside world. |
+| **Shinobi Registry** | Every file with purpose, line count, and a complexity meter. Sortable columns, filter box. |
+| **The Dojo** | A knowledge check scored in the page, with a rank stamp at the end. |
+
+Also: `Ctrl K` (or `/`) opens a command palette, the theme button switches to a light theme, and the whole document prints cleanly to PDF.
 
 ### `byakugan explain <file> [-p project-path]`
 Looks up the file in `analysis.json` and asks the LLM for a focused explanation: what the file does, its key exports, what depends on it, and anything non-obvious. Output adapted to your profile level.

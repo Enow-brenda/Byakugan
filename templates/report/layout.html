@@ -1,40 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="night">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{title}}</title>
-<style>
-{{{styles}}}
-</style>
+<meta name="description" content="Byakugan report for {{projectName}}: multi-pass code analysis, change impact, and a knowledge check.">
+<meta name="color-scheme" content="dark light">
+<style>{{{styles}}}</style>
 </head>
 <body>
-<header class="site-header">
-  <h1>&#128065; Byakugan &mdash; {{projectName}}</h1>
-  <span class="header-meta">
-    {{profileName}} &middot; {{intent}} &middot; {{levelName}}
-    &nbsp;|&nbsp; Generated {{generatedAt}}
-  </span>
-</header>
-<nav>{{{nav}}}</nav>
-<main>{{{sections}}}</main>
-<script>
 
-  document.querySelectorAll('.quiz-opt').forEach(function(opt) {
-    opt.addEventListener('click', function() {
-      var item = opt.closest('.quiz-item');
-      if (item.dataset.answered) return;
-      item.dataset.answered = '1';
-      var correct = opt.dataset.correct;
-      var letter = opt.dataset.letter;
-      item.querySelectorAll('.quiz-opt').forEach(function(o) {
-        if (o.dataset.letter === correct) o.classList.add('selected-correct');
-        else if (o === opt) o.classList.add('selected-wrong');
-      });
-      var fb = item.querySelector('.quiz-feedback');
-      if (fb) fb.style.display = 'block';
-    });
-  });
-</script>
+{{! The activation sequence runs on CSS alone, so the report is readable even if
+    this file is opened with scripts disabled. The eye opens, the veins draw, the
+    iris locks, and the page is handed over. Click or press any key to skip. }}
+<div id="activation" role="status" aria-label="Byakugan activation">
+  <div class="eye-stage">
+    <svg class="eye-svg" viewBox="0 0 400 240" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="irisGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ede9fe"/>
+          <stop offset="0.55" stop-color="#a78bfa"/>
+          <stop offset="1" stop-color="#6366f1"/>
+        </linearGradient>
+        <radialGradient id="flashGrad" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#ffffff"/>
+          <stop offset="0.55" stop-color="#c4b5fd" stop-opacity="0.5"/>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="eyeGlow" x="-70%" y="-70%" width="240%" height="240%">
+          <feGaussianBlur stdDeviation="7" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <clipPath id="eyeClip">
+          <path d="M20 120C70 44 330 44 380 120 330 196 70 196 20 120Z"/>
+        </clipPath>
+      </defs>
+
+      <g class="eye-open">
+        <path class="eye-white" d="M20 120C70 44 330 44 380 120 330 196 70 196 20 120Z"/>
+        <g clip-path="url(#eyeClip)">
+          <circle class="eye-iris" cx="200" cy="120" r="47"/>
+          <g clip-path="url(#eyeClip)">
+            <path class="eye-vein" d="M153 120 112 104M120 120 92 128M247 120l41-16M280 120l28 8"/>
+            <path class="eye-vein" d="M200 73V38M200 167v35M167 90l-18-26M233 90l18-26M167 150l-18 26M233 150l18 26"/>
+          </g>
+        </g>
+        <circle class="eye-pupil" cx="200" cy="120" r="18"/>
+        <path class="eye-limbus" d="M20 120C70 44 330 44 380 120 330 196 70 196 20 120Z"/>
+        <path class="eye-glow" d="M20 120C70 44 330 44 380 120 330 196 70 196 20 120Z"/>
+      </g>
+      <circle class="eye-flash" cx="200" cy="120" r="160"/>
+    </svg>
+    <div class="eye-word">BYAKUGAN</div>
+    <div class="eye-sub">{{projectName}}</div>
+    <div class="eye-skip">click anywhere to skip</div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  {{{nav}}}
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn rail-toggle" id="railToggle" type="button" aria-label="Open navigation" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <span class="topbar-title">{{projectName}}</span>
+      <span class="topbar-crumb" id="topbarCrumb">Mission Dossier</span>
+      <span class="topbar-spacer"></span>
+
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <input class="search-input" id="search" type="search" placeholder="Filter files and techniques" aria-label="Filter files and techniques" autocomplete="off">
+      </div>
+
+      <button class="icon-btn" id="paletteBtn" type="button" aria-label="Open command palette">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 8 3-3M8 5h-3v3M19 8l-3-3M16 5h3v3M19 16l-3 3M16 19h3v-3M5 16l3 3M8 19H5v-3"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch to the daytime theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="icon-moon"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="icon-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>
+      </button>
+    </header>
+
+    <main class="content">
+{{{sections}}}
+    </main>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="palette-box">
+    <input class="palette-input" id="paletteInput" type="text" placeholder="Jump to a section, or run a command" autocomplete="off" aria-label="Command">
+    <ul class="palette-list" id="paletteList" role="listbox"></ul>
+    <div class="palette-empty" id="paletteEmpty">Nothing matches that.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+{{! The graph payload is data, not code. jsonForScript() escapes the one sequence
+    that could close this element early, so a hostile node label cannot break out
+    into markup. Empty for reports whose analysis had no chakra network. }}
+<script type="application/json" id="byakugan-graph">{{{graph}}}</script>
+<script>{{{scripts}}}</script>
 </body>
 </html>
