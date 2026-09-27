@@ -1,0 +1,37 @@
+<section id="techniques" class="section">
+  <h2>Techniques</h2>
+  <p class="section-desc">Patterns, idioms, and notable code techniques found in this codebase.</p>
+  <div class="technique-grid">
+    {{#each techniques}}
+    <div class="technique-card significance-{{significance}}">
+      <div class="technique-header">
+        <h3>{{{name}}}</h3>
+        <span class="badge badge-{{category}}">{{category}}</span>
+        {{#if sigBadge}}
+        <span class="sig-badge">{{sigBadge}}</span>
+        {{/if}}
+      </div>
+      {{#if detailed}}
+      <dl class="concept-card">
+        <dt>What it is</dt><dd>{{{whatItIs}}}</dd>
+        <dt>Why it matters</dt><dd>{{{whyItMatters}}}</dd>
+        <dt>Without it</dt><dd>{{{withoutIt}}}</dd>
+      </dl>
+      {{else}}
+      <div class="technique-blurb">{{{whatItIs}}}</div>
+      {{/if}}
+      {{#if occurrences}}
+      <details>
+        <summary>Occurrences ({{occurrenceCount}})</summary>
+        {{#each occurrences}}
+        <div class="occurrence">
+          <code class="file-ref">{{file}}:{{line}}</code>
+          <pre class="snippet">{{snippet}}</pre>
+        </div>
+        {{/each}}
+      </details>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+</section>

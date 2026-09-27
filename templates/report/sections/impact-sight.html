@@ -1,0 +1,58 @@
+<section id="impact-sight" class="section">
+  <h2>Impact Sight</h2>
+  <p class="section-desc">Change risk, hotspots, and dependency exposure.</p>
+
+  {{#if hotspots}}
+  <h3>Hotspots</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Reason</th><th>Risk</th></tr></thead>
+      <tbody>
+        {{#each hotspots}}
+        <tr>
+          <td><code>{{file}}</code></td>
+          <td>{{{reason}}}</td>
+          <td><span class="risk-badge risk-{{risk}}">{{risk}}</span></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{/if}}
+
+  {{#if mutations}}
+  <h3>State Mutations</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Symbol</th><th>Scope</th></tr></thead>
+      <tbody>
+        {{#each mutations}}
+        <tr>
+          <td><code>{{file}}</code></td>
+          <td><code>{{symbol}}</code></td>
+          <td>{{kind}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{/if}}
+
+  {{#if dependencies}}
+  <h3>External Dependencies</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Package</th><th>Type</th><th>Used In</th></tr></thead>
+      <tbody>
+        {{#each dependencies}}
+        <tr>
+          <td><code>{{name}}</code></td>
+          <td>{{type}}</td>
+          <td>{{#each usedIn}}{{#unless @first}}, {{/unless}}<code>{{.}}</code>{{/each}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{/if}}
+</section>

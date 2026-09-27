@@ -1,0 +1,40 @@
+<section id="quiz" class="section">
+  <h2>Quiz</h2>
+  <p class="section-desc">All {{total}} questions.{{#if tailored}} The {{tailored}} matching your
+  <strong>{{intent}}</strong> intent at <strong>{{levelName}}</strong> level are listed first.
+  {{else}} None are tailored to your <strong>{{intent}}</strong> intent at
+  <strong>{{levelName}}</strong> level yet.{{/if}}</p>
+  <div class="quiz-list">
+    {{#each questions}}
+    <div class="quiz-item" id="quiz-{{id}}">
+      <p class="quiz-q"><strong>Q{{number}}.</strong> {{{question}}}{{#if tailored}} <span class="badge">for you</span>{{/if}}</p>
+      {{#if multipleChoice}}
+      <ul class="quiz-options">
+        {{#each options}}
+        <li class="quiz-opt" data-correct="{{correct}}" data-letter="{{letter}}">{{{text}}}</li>
+        {{/each}}
+      </ul>
+      <div class="quiz-feedback" style="display:none">
+        <span class="correct-label">&#10003; Correct: {{correct}}</span>
+        {{#if showIdeal}}
+        <div class="ideal-label">Ideal answer</div>
+        <div class="quiz-ideal">{{{idealAnswer}}}</div>
+        {{/if}}
+        <div class="explanation">{{{explanation}}}</div>
+      </div>
+      {{else}}
+      <div class="quiz-short">
+        <details>
+          <summary>Show ideal answer</summary>
+          <div class="quiz-ideal">{{{idealAnswer}}}</div>
+          <div class="explanation">{{{explanation}}}</div>
+        </details>
+      </div>
+      {{/if}}
+      {{#if references}}
+      <p class="quiz-refs">References: {{#each references}}{{#unless @first}}, {{/unless}}<code>{{.}}</code>{{/each}}</p>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+</section>

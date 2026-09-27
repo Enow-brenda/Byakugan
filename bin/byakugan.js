@@ -11,8 +11,22 @@ require('dotenv').config({
 });
 
 const { program } = require('commander');
-const chalk = require('chalk');
 const pkg = require('../package.json');
+const ui = require('../lib/ui');
+
+// Every command funnels through here so a failure always reads the same way.
+// This replaces seven hand-written `console.error(chalk.red('✗ X failed: ...'))`
+// blocks that had drifted apart.
+function command(name, run) {
+  return async (...args) => {
+    try {
+      await run(...args);
+    } catch (err) {
+      ui.fail(name + ' failed', { detail: ui.firstLine(err && err.message ? err.message : err) });
+      process.exit(1);
+    }
+  };
+}
 
 program
   .name('byakugan')
@@ -24,15 +38,10 @@ program
   .command('profile')
   .description('Set up your skill level and intent — saved to .byakugan/profile.json')
   .option('-p, --project <path>', 'Project directory (default: current directory)')
-  .action(async (options) => {
-    try {
-      const { profile } = require('../lib/profiler');
-      await profile({ projectPath: options.project });
-    } catch (err) {
-      console.error(chalk.red('✗ Profile setup failed: ' + err.message));
-      process.exit(1);
-    }
-  });
+  .action(command('profile', async (options) => {
+    const { profile } = require('../lib/profiler');
+    await profile({ projectPath: options.project });
+  }));
 
 // ── analyze ───────────────────────────────────────────────────────────────────
 program
@@ -40,15 +49,20 @@ program
   .description('Scan a codebase and generate analysis.json via AI')
   .option('--max-files <n>', 'Maximum files to analyze', parseInt)
   .option('--max-chars <n>', 'Maximum content characters to send', parseInt)
-  .action(async (targetPath, options) => {
+  .option('--trace', 'Print a per-call table of provider requests, tokens and timings')
+  .action(command('analyze', async (targetPath, options) => {
+    const { analyze } = require('../lib/analyzer');
+    const trace = require('../lib/trace');
+    // Opt-in only: tracing allocates a span per provider call and prints a
+    // table, neither of which a normal run wants. analyze() renders the table
+    // itself, before the `next` footer; the wrapper only owns the switch.
+    if (options.trace) trace.enable();
     try {
-      const { analyze } = require('../lib/analyzer');
       await analyze(targetPath, options);
-    } catch (err) {
-      console.error(chalk.red('✗ Analysis failed: ' + err.message));
-      process.exit(1);
+    } finally {
+      trace.disable();
     }
-  });
+  }));
 
 // ── report ────────────────────────────────────────────────────────────────────
 program
@@ -56,46 +70,40 @@ program
   .description('Generate an HTML report from analysis.json')
   .option('-o, --output <path>', 'Output file path (default: <project>/.byakugan/report.html)')
   .option('-p, --project <path>', 'Project directory to read (default: current directory)')
-  .action(async (options) => {
-    try {
-      const { generateReport } = require('../lib/reporter');
-      const outFile = await generateReport(options.output, options.project);
-      console.log(chalk.green('✓ Report saved to ') + chalk.bold.green(outFile));
-    } catch (err) {
-      console.error(chalk.red('✗ Report generation failed: ' + err.message));
-      process.exit(1);
-    }
-  });
+  .action(command('report', async (options) => {
+    const { generateReport } = require('../lib/reporter');
+    // reporter.js owns the "saved" line so the library and the CLI agree; the
+    // entrypoint only adds the footer.
+    const outFile = await generateReport(options.output, options.project);
+    ui.end({
+      next: [
+        ['start ' + outFile, 'open it in your browser'],
+        ['byakugan chat', 'ask questions about this code'],
+      ],
+    });
+  }));
 
 // ── explain ──────────────────────────────────────────────────────────────────
 program
   .command('explain <file>')
   .description('Explain what a specific file does, adapted to your profile level')
   .option('-p, --project <path>', 'Project directory to read (default: current directory)')
-  .action(async (file, options) => {
-    try {
-      const { explain } = require('../lib/explain');
-      await explain(file, { projectPath: options.project });
-    } catch (err) {
-      console.error(chalk.red('✗ Explain failed: ' + err.message));
-      process.exit(1);
-    }
-  });
+  .option('--raw', 'Stream unformatted text instead of formatting as it arrives')
+  .action(command('explain', async (file, options) => {
+    const { explain } = require('../lib/explain');
+    await explain(file, { projectPath: options.project, raw: options.raw });
+  }));
 
 // ── impact ────────────────────────────────────────────────────────────────────
 program
   .command('impact <file>')
   .description('Analyse what would break if a specific file changed or was removed')
   .option('-p, --project <path>', 'Project directory to read (default: current directory)')
-  .action(async (file, options) => {
-    try {
-      const { impact } = require('../lib/impact');
-      await impact(file, { projectPath: options.project });
-    } catch (err) {
-      console.error(chalk.red('✗ Impact analysis failed: ' + err.message));
-      process.exit(1);
-    }
-  });
+  .option('--raw', 'Stream unformatted text instead of formatting as it arrives')
+  .action(command('impact', async (file, options) => {
+    const { impact } = require('../lib/impact');
+    await impact(file, { projectPath: options.project, raw: options.raw });
+  }));
 
 // ── chat ──────────────────────────────────────────────────────────────────────
 program
@@ -105,20 +113,15 @@ program
   .option('--rag', 'Force retrieval even if the analysis fits in context')
   .option('--no-rag', 'Force full-context mode, never retrieve')
   .option('--smart-route', 'Classify each question with an extra LLM call before retrieving')
-  .action(async (options) => {
-    try {
-      const { chat } = require('../lib/chat');
-      await chat({
-        projectPath: options.project,
-        forceRag: options.rag === true,
-        forceNoRag: options.rag === false,
-        smartRoute: options.smartRoute === true,
-      });
-    } catch (err) {
-      console.error(chalk.red('✗ Chat failed: ' + err.message));
-      process.exit(1);
-    }
-  });
+  .action(command('chat', async (options) => {
+    const { chat } = require('../lib/chat');
+    await chat({
+      projectPath: options.project,
+      forceRag: options.rag === true,
+      forceNoRag: options.rag === false,
+      smartRoute: options.smartRoute === true,
+    });
+  }));
 
 // ── doctor ────────────────────────────────────────────────────────────────────
 program
@@ -128,9 +131,10 @@ program
     const llm = require('../lib/llm');
     const batching = require('../lib/batching');
 
-    console.log(chalk.cyan('\n› Byakugan doctor\n'));
+    ui.begin('doctor');
 
-    const rows = [
+    ui.group('config');
+    ui.table([
       ['node', process.version],
       ['generation model', llm.config.genModel()],
       ['embedding model', llm.config.embedModel()],
@@ -141,33 +145,65 @@ program
       ['max files', String(batching.MAX_FILES)],
       ['max content chars', batching.MAX_CONTENT_CHARS.toLocaleString()],
       ['batch budget', batching.BATCH_CHAR_BUDGET.toLocaleString()],
-    ];
-    for (const [k, v] of rows) {
-      console.log(`  ${chalk.gray(k.padEnd(20))} ${chalk.bold.green(v)}`);
-    }
+    ], { labelWidth: 16 });
 
-    console.log(chalk.cyan('\n› Probing providers...\n'));
+    const probePhase = ui.createPhase('probe providers');
     const probe = await llm.probe();
+    // Settle before printing anything else. A live phase line is overwritten in
+    // place with \r + erase, so any line written underneath it first would be
+    // the one destroyed by the settle. The probe itself did complete; whether
+    // the providers are usable is what the rows below report.
+    probePhase.done();
 
+    ui.group('providers');
+    const results = [];
     for (const [label, result] of [['generation', probe.generation], ['embedding', probe.embedding]]) {
       if (result.ok) {
-        const detail = result.dimensions ? `${result.dimensions} dimensions` : `reply: "${result.reply}"`;
-        console.log(`  ${chalk.green('✓')} ${label.padEnd(12)} ${chalk.bold.green(result.model)} — ${detail}`);
+        const detail = result.dimensions
+          ? result.dimensions + ' dimensions'
+          : 'reply: "' + result.reply + '"';
+        results.push([label, result.model, detail]);
       } else {
-        console.log(`  ${chalk.red('✗')} ${label.padEnd(12)} ${chalk.red(result.error)}`);
+        results.push([label, null, result.error]);
+      }
+    }
+
+    // A failed provider row and a failed summary used to both print, with the
+    // row as red ✗ and the summary as a yellow '!'. One status per row, then a
+    // single verdict.
+    for (const [label, model, detail] of results) {
+      if (model) {
+        ui.success(label, { detail: model + '  ' + ui.dim(detail) });
+      } else {
+        ui.fail(label + ' unreachable', { detail: detail });
       }
     }
 
     const allOk = probe.generation.ok && probe.embedding.ok;
-    console.log(allOk
-      ? chalk.green('\n✓ All checks passed.\n')
-      : chalk.yellow('\n! Some checks failed — fix the above before running `analyze`.\n'));
-    if (!allOk) process.exit(1);
+    if (!allOk) {
+      ui.blank();
+      ui.warn('fix the above before running `analyze`');
+      process.exit(1);
+    }
+    ui.blank();
+    ui.success('all checks passed', {
+      detail: 'run `byakugan analyze <path>` to get started',
+    });
   });
+
+// An unknown command is a user error, not an internal one, so it gets the same
+// failure treatment as everything else. Commander's own usage text (--help,
+// bad flags) stays plain, which is correct for help output.
+program.on('command:*', () => {
+  ui.fail('unknown command: ' + program.args[0], {
+    hint: 'run `byakugan --help` to see the available commands',
+  });
+  process.exit(1);
+});
 
 // Async action handlers must be awaited, otherwise a rejected promise from
 // `analyze`/`chat` becomes an unhandled rejection instead of a clean exit.
 program.parseAsync(process.argv).catch((err) => {
-  console.error(chalk.red('✗ ' + (err && err.message ? err.message : err)));
+  ui.fail(ui.firstLine(err && err.message ? err.message : err));
   process.exit(1);
 });

@@ -1,0 +1,20 @@
+<section id="overview" class="section">
+  <h2>Overview</h2>
+  {{#if intentNote}}
+  <p class="intent-note">{{intentNote}}</p>
+  {{/if}}
+  <div class="card-grid">
+    {{#each cards}}
+    <div class="card"><span class="label">{{label}}</span><span class="value">{{{value}}}</span></div>
+    {{/each}}
+  </div>
+  <div class="summary">{{{summary}}}</div>
+  {{#if entryPoints}}
+  <h3>Entry Points</h3>
+  <ul>
+    {{#each entryPoints}}
+    <li><code>{{.}}</code></li>
+    {{/each}}
+  </ul>
+  {{/if}}
+</section>

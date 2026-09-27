@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{title}}</title>
+<style>
+{{{styles}}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <h1>&#128065; Byakugan &mdash; {{projectName}}</h1>
+  <span class="header-meta">
+    {{profileName}} &middot; {{intent}} &middot; {{levelName}}
+    &nbsp;|&nbsp; Generated {{generatedAt}}
+  </span>
+</header>
+<nav>{{{nav}}}</nav>
+<main>{{{sections}}}</main>
+<script>
+
+  document.querySelectorAll('.quiz-opt').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      var item = opt.closest('.quiz-item');
+      if (item.dataset.answered) return;
+      item.dataset.answered = '1';
+      var correct = opt.dataset.correct;
+      var letter = opt.dataset.letter;
+      item.querySelectorAll('.quiz-opt').forEach(function(o) {
+        if (o.dataset.letter === correct) o.classList.add('selected-correct');
+        else if (o === opt) o.classList.add('selected-wrong');
+      });
+      var fb = item.querySelector('.quiz-feedback');
+      if (fb) fb.style.display = 'block';
+    });
+  });
+</script>
+</body>
+</html>

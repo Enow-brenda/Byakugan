@@ -1,0 +1,27 @@
+<section id="files" class="section">
+  <h2>Files</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Path</th><th>Language</th><th>Lines</th><th>Purpose</th><th>Complexity</th>
+          {{#if showExports}}<th>Exports</th>{{/if}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each files}}
+        <tr>
+          <td><code>{{path}}</code></td>
+          <td>{{language}}</td>
+          <td>{{lines}}</td>
+          <td>{{{purpose}}}</td>
+          <td><span class="complexity-badge complexity-{{complexity}}">{{complexity}}</span></td>
+          {{#if showExports}}
+          <td>{{#if exports}}{{#each exports}}{{#unless @first}}, {{/unless}}<code title="{{signature}}">{{name}}</code>{{/each}}{{else}}&mdash;{{/if}}</td>
+          {{/if}}
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</section>

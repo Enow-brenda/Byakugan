@@ -1,0 +1,131 @@
+/* Byakugan report styles. ASCII only; see templates/report/README.md. */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "Segoe UI", system-ui, sans-serif; font-size: 14px;
+       line-height: 1.6; background: #f7f8fa; color: #1f2328; }
+a { color: #3b82d4; text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font-family: "Cascadia Code", "Fira Code", monospace; font-size: 0.87em;
+       background: #eef0f3; padding: 1px 5px; border-radius: 3px; }
+pre.snippet { background: #1e1e2e; color: #cdd6f4; padding: 10px 14px; border-radius: 6px;
+              font-size: 0.82em; overflow-x: auto; margin-top: 6px; white-space: pre-wrap; }
+
+nav { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 0 32px;
+      display: flex; gap: 4px; overflow-x: auto; }
+nav a { display: block; padding: 10px 14px; font-size: 0.82rem; font-weight: 500;
+        color: #57606a; border-bottom: 2px solid transparent; white-space: nowrap; }
+nav a:hover { color: #1f2328; border-bottom-color: #3b82d4; text-decoration: none; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+             gap: 12px; margin-bottom: 16px; }
+.card { background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 6px;
+        padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.card .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
+               color: #57606a; font-weight: 600; }
+.card .value { font-size: 0.9rem; font-weight: 500; color: #1f2328; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+th { text-align: left; font-weight: 600; font-size: 0.75rem; text-transform: uppercase;
+     letter-spacing: 0.04em; color: #57606a; padding: 8px 12px;
+     border-bottom: 2px solid #e5e7eb; white-space: nowrap; }
+td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f7f8fa; }
+
+.quiz-list { display: flex; flex-direction: column; gap: 20px; }
+.quiz-item { border: 1px solid #e5e7eb; border-radius: 8px; padding: 18px 20px; }
+.quiz-q { font-weight: 500; margin-bottom: 12px; }
+.quiz-options { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.quiz-opt { padding: 8px 14px; border: 1px solid #e5e7eb; border-radius: 6px;
+            cursor: pointer; font-size: 0.88rem; transition: background 0.15s; }
+.quiz-opt:hover { background: #f0f6ff; border-color: #3b82d4; }
+.quiz-opt.selected-correct { background: #dcfce7; border-color: #16a34a; }
+.quiz-opt.selected-wrong   { background: #fee2e2; border-color: #dc2626; }
+.quiz-feedback { margin-top: 10px; padding: 10px 14px; background: #f0fdf4;
+                 border: 1px solid #bbf7d0; border-radius: 6px; font-size: 0.85rem; }
+.correct-label { font-weight: 600; color: #16a34a; display: block; margin-bottom: 4px; }
+.explanation { color: #374151; margin-top: 4px; }
+.quiz-short details p { margin-top: 8px; font-size: 0.88rem; }
+.quiz-refs { font-size: 0.78rem; color: #57606a; margin-top: 10px; }
+
+/* --- layout ------------------------------------------------------------- */
+.site-header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 28px 32px 22px; }
+.site-header h1 { font-size: 1.5rem; font-weight: 650; letter-spacing: -0.01em; }
+.header-meta { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center;
+               gap: 6px; font-size: 0.8rem; color: #57606a; }
+.header-meta > * + *::before { content: "/"; margin-right: 6px; color: #d0d7de; }
+
+section.section { padding: 26px 32px; border-bottom: 1px solid #eaecef; }
+section.section:last-of-type { border-bottom: none; }
+/* Keeps a linked heading from landing underneath the nav bar. */
+section.section { scroll-margin-top: 44px; }
+.section h2 { font-size: 1.05rem; font-weight: 620; margin-bottom: 4px; }
+.section-desc { font-size: 0.85rem; color: #57606a; margin-bottom: 16px; }
+.intent-note { margin-bottom: 16px; padding: 10px 14px; background: #f0f6ff;
+               border: 1px solid #d6e6fb; border-left: 3px solid #3b82d4;
+               border-radius: 4px; font-size: 0.85rem; color: #374151; }
+
+/* --- badges ------------------------------------------------------------- */
+.badge, .sig-badge, .complexity-badge, .risk-badge, .edge-kind {
+  display: inline-block; padding: 1px 8px; border-radius: 10px;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.02em;
+  background: #eef0f3; color: #57606a; white-space: nowrap; }
+.sig-badge { background: #f0f6ff; color: #3b82d4; }
+.sig-high, .risk-high, .complexity-high { background: #fee2e2; color: #dc2626; }
+.sig-medium, .risk-medium, .complexity-medium { background: #fef3c7; color: #b45309; }
+.sig-low, .risk-low, .complexity-low { background: #dcfce7; color: #16a34a; }
+.complexity-badge, .risk-badge { background: #eef0f3; color: #57606a; }
+
+/* --- techniques --------------------------------------------------------- */
+.technique-grid { display: flex; flex-direction: column; gap: 12px; }
+.technique-card { background: #fff; border: 1px solid #e5e7eb; border-left: 3px solid #d0d7de;
+                  border-radius: 6px; padding: 14px 16px; }
+.technique-card.sig-high { border-left-color: #dc2626; }
+.technique-card.sig-medium { border-left-color: #b45309; }
+.technique-card.sig-low { border-left-color: #16a34a; }
+.technique-header { display: flex; flex-wrap: wrap; align-items: baseline;
+                    gap: 8px; margin-bottom: 8px; }
+.technique-header h3 { font-size: 0.95rem; font-weight: 620; }
+.technique-card dl { display: grid; grid-template-columns: max-content 1fr;
+                     gap: 4px 14px; font-size: 0.86rem; }
+.technique-card dt { font-weight: 600; color: #57606a; }
+.technique-card dd { color: #1f2328; min-width: 0; }
+.technique-blurb { color: #1f2328; }
+
+.occurrence { margin-top: 12px; }
+.occurrence-head { display: flex; align-items: center; gap: 8px; font-size: 0.78rem;
+                   color: #57606a; margin-bottom: 4px; }
+.file-ref { font-family: "Cascadia Code", "Fira Code", monospace; font-size: 0.85em;
+            color: #3b82d4; }
+.occurrence pre.snippet { margin-top: 0; }
+
+/* --- chakra network ----------------------------------------------------- */
+.concept-card { display: flex; flex-direction: column; gap: 10px; }
+.concept-card .file-ref { margin: 2px 0; }
+
+/* --- quiz --------------------------------------------------------------- */
+.quiz-ideal { margin-bottom: 10px; }
+.ideal-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
+               font-weight: 600; color: #57606a; margin-bottom: 3px; }
+.quiz-ideal > * + * { margin-top: 8px; }
+.quiz-item .explanation > * + * { margin-top: 8px; }
+.quiz-short { margin-top: 12px; border-top: 1px dashed #e5e7eb; padding-top: 10px;
+              font-size: 0.85rem; }
+.quiz-short summary { cursor: pointer; color: #57606a; font-size: 0.8rem; }
+
+/* --- rendered model prose ----------------------------------------------
+   Elements emitted by lib/markdown.js. Kept in step with the Markdown
+   feature set: headings, lists, quotes, rules, and fenced code. */
+.summary > * + *, .technique-blurb > * + *, .explanation > * + * { margin-top: 8px; }
+.summary h3, .summary h4, .summary h5, .summary h6 { font-size: 0.95rem; font-weight: 620; }
+.summary h3 { margin-top: 14px; }
+.summary ul, .summary ol { padding-left: 22px; }
+.summary li + li { margin-top: 3px; }
+blockquote { padding: 6px 0 6px 12px; border-left: 3px solid #d0d7de; color: #4b5563; }
+blockquote > * + * { margin-top: 6px; }
+hr { border: none; border-top: 1px solid #e5e7eb; margin: 12px 0; }
+pre.md-code { background: #1e1e2e; color: #cdd6f4; padding: 10px 14px; border-radius: 6px;
+              font-size: 0.82em; overflow-x: auto; white-space: pre-wrap; }
+pre.md-code code { background: none; padding: 0; color: inherit; font-size: 1em; }
+.prose-list-tight { padding-left: 20px; }
