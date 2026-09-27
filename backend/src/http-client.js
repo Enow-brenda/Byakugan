@@ -107,16 +107,29 @@ function httpPostOnce(url, headers, body, timeoutMs) {
 
 // Retries transient failures with exponential backoff plus jitter, honouring
 // Retry-After when the provider sends one. Returns the parsed response.
+// Groq's TPM limit is charged on input PLUS the output reservation, not just what
+// we send. Reserving only the input made the ledger believe a request fit when it
+// did not, so the provider rejected it and we had burned a round trip finding out.
+//
+// max_tokens is read from the body rather than the task's options because this
+// module cannot see the task registry, and the provider module is what ultimately
+// decides the number. A body without max_tokens reserves input only - a mistake
+// costs a 413, inventing an output cost for a request that made none just
+// under-uses the budget.
+function reserveForBody(body, label, scope) {
+  const billing = require('./billing');
+  const outputReserve = Number.isFinite(body && body.max_tokens) ? body.max_tokens : 0;
+  const inputTokens = estimateTokens(body);
+  return billing.reserve(scope, inputTokens + outputReserve, label).then(reservation => ({
+    reservation,
+    requestTokens: inputTokens + outputReserve,
+    outputReserve,
+  }));
+}
+
 async function httpPost(url, headers, body, label, scope) {
   const billing = require('./billing');
-  // Groq's TPM limit is charged on input PLUS the output reservation, not just
-  // what we send. Reserving only the input made the ledger believe a request fit
-  // when it did not, so the provider rejected it and we had burned a round trip
-  // finding out. maxTokens is passed by the caller because only the provider
-  // module knows which option actually ended up in the body.
-  const outputReserve = Number.isFinite(body && body.max_tokens) ? body.max_tokens : 0;
-  const requestTokens = estimateTokens(body) + outputReserve;
-  const reservation = await billing.reserve(scope, requestTokens, label);
+  const { reservation, requestTokens, outputReserve } = await reserveForBody(body, label, scope);
 
   let lastError;
   let attempts = 0;
@@ -207,7 +220,10 @@ async function httpPost(url, headers, body, label, scope) {
 async function httpStream(url, headers, body, label, scope, onDelta) {
   const billing = require('./billing');
 
-  const reservation = await billing.reserve(scope, estimateTokens(body), label);
+  // Same accounting as httpPost: a streamed request reserves its output cap too.
+  // explain, impact and chat all stream, so leaving this one input-only would
+  // have preserved the exact 413s the buffered path was just fixed for.
+  const { reservation } = await reserveForBody(body, label, scope);
 
   return new Promise((resolve, reject) => {
     const payload = JSON.stringify(body);

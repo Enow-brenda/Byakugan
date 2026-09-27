@@ -114,7 +114,12 @@ const TASKS = {
   route: {
     prompt: 'route.md',
     variables: ['QUESTION'],
-    options: { maxCompletionTokens: 16, json: false, reasoningEffort: 'low' },
+    // 16 was too small to be usable. gpt-oss spends output tokens on reasoning
+    // before it emits anything, so a 16-token cap meant finish_reason=length with
+    // an empty message every single time, and the CLI then retried a request that
+    // could never succeed. The answer is still one short routing decision; the cap
+    // only has to leave room for the reasoning that precedes it.
+    options: { maxCompletionTokens: 256, json: false, reasoningEffort: 'low' },
   },
 };
 

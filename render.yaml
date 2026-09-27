@@ -1,0 +1,41 @@
+# Render blueprint for the Byakugan backend.
+#
+# This service is a plain long-lived Node process, not a serverless function, and
+# that is deliberate. backend/src/billing.js holds the token-per-minute ledger in
+# process memory so concurrent callers are paced against a single Groq account.
+# A host that keeps one process alive gets that for free; a serverless host would
+# hand every instance its own unrelated window and the account-level limit would
+# be exceeded.
+#
+# No build step: the backend has one runtime dependency (dotenv), the CLI has none,
+# and there is nothing to compile or bundle.
+#
+# Secrets are intentionally absent. Every variable below that can carry a
+# credential must be set in the Render dashboard, marked Secret, for this file to
+# stay safe to commit.
+
+services:
+  - type: web
+    name: byakugan-backend
+    runtime: node
+    plan: starter # not `free`: free instances sleep after ~15 min idle, so a
+                   # demo's first call would stall on a cold start
+    region: oregon
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /v1/health
+
+    # Inherited from the Render dashboard (dashboard overrides blueprint values):
+    #   GROQ_API_KEY       Secret   required
+    #   HF_API_KEY         Secret   required
+    #   BYAKUGAN_API_TOKEN Secret   required — without it the public URL is open
+    #   LLM_TPM_LIMIT      Plain    8000
+    #   NODE_ENV           Plain    production
+    #   BYAKUGAN_LOG_LEVEL Plain    info
+    #
+    # PORT and HOST are not listed: Render injects PORT, and config.js already
+    # defaults HOST to 0.0.0.0, which is the interface Render routes to.
+    #
+    # Leave BYAKUGAN_MOCK unset. Setting it makes every answer a fixture while
+    # still looking like a healthy deployment.

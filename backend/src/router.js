@@ -206,12 +206,15 @@ async function handleHealth(res, deep) {
   });
 }
 
-// Groq/HF organisation and project ids. The replacement deliberately does not
-// repeat the `org_` prefix: a redacted id that still looks like a real one is
-// confusing to grep for and easy to mistake for something unhandled.
+// Groq/HF organisation and project ids. Every pattern requires a real id shape -
+// a known prefix plus a separator - because a looser "prefix followed by 10
+// characters" rule silently mangled ordinary words: `projectSummary` matched
+// `proj` + `ectSummary` and came out as `[redacted]`, turning a useful
+// "missing variables" message into nonsense. The replacement also avoids reusing
+// the `org_` prefix so a redacted id cannot be mistaken for a real one.
 const PROVIDER_SECRETS = [
   { re: /\borg_[A-Za-z0-9]{8,}\b/g, as: '[redacted:org-id]' },
-  { re: /\b(?:org|proj|billing|account)[_-]?[A-Za-z0-9]{10,}\b/gi, as: '[redacted]' },
+  { re: /\b(?:org|proj|project|billing|acct|account|user|team)[_-][A-Za-z0-9]{8,}\b/gi, as: '[redacted]' },
   { re: /\bsk-[A-Za-z0-9_-]{8,}\b/g, as: '[redacted:key]' },
   { re: /\b(?:gsk|hf|r8|pk)[_-][A-Za-z0-9]{12,}\b/g, as: '[redacted:key]' },
   { re: /\bBearer\s+[A-Za-z0-9._-]{8,}\b/gi, as: '[redacted]' },
