@@ -101,6 +101,45 @@
     });
   }
 
+  var player = document.querySelector(".player");
+
+  if (player) {
+    var frame = document.getElementById("playerFrame");
+    var hint = document.getElementById("playerHint");
+    var play = player.querySelector(".player__play");
+    var videoId = (player.getAttribute("data-video-id") || "").trim();
+    var ready = /^[A-Za-z0-9_-]{11}$/.test(videoId);
+
+    if (ready) {
+      var badge = document.createElement("span");
+      badge.className = "player__badge";
+      badge.textContent = "Watch on YouTube";
+      player.appendChild(badge);
+
+      if (hint) hint.textContent = "Click to play. Loads from YouTube only when you do.";
+
+      if (play) {
+        play.setAttribute("aria-label", "Play the Byakugan demo video");
+        play.addEventListener("click", function () {
+          var iframe = document.createElement("iframe");
+          iframe.src = "https://www.youtube-nocookie.com/embed/" + videoId + "?autoplay=1&rel=0";
+          iframe.title = "Byakugan demo video";
+          iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+          iframe.allowFullscreen = true;
+          iframe.setAttribute("loading", "lazy");
+          if (frame) frame.innerHTML = "";
+          if (frame) frame.appendChild(iframe);
+        });
+      }
+    } else if (play) {
+      play.disabled = true;
+      play.setAttribute("aria-disabled", "true");
+      play.style.opacity = "0.45";
+      play.style.cursor = "default";
+      if (hint) hint.textContent = "Demo recording coming soon. Check the repository in the meantime.";
+    }
+  }
+
   var copyBtn = document.getElementById("copyBtn");
 
   if (copyBtn) {

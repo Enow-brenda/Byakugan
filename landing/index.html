@@ -29,6 +29,7 @@
       <a href="#problem">The problem</a>
       <a href="#features">What you get</a>
       <a href="#how">How it works</a>
+      <a href="#demo">Watch the demo</a>
       <a href="#bob">IBM Bob</a>
       <a href="#team">Team</a>
     </nav>
@@ -101,6 +102,45 @@
           <p>Explaining one file in isolation ignores the other twenty-nine. You already know how to read a function.</p>
         </article>
       </div>
+    </div>
+  </section>
+
+  <section class="demo" id="demo">
+    <div class="wrap">
+      <p class="eyebrow">watch it work</p>
+      <h2 class="sec__title">Ninety seconds, start to finish.</h2>
+      <p class="sec__sub">A real run on a real repository, from an empty folder to a report you can read. No edits, no narration of what you are about to see.</p>
+
+      <!--
+        TODO_VIDEO - replace VIDEO_ID_HERE with the id from your YouTube URL.
+        https://www.youtube.com/watch?v=VIDEO_ID_HERE
+                                                  ^^^^^^^^^^^^ this bit only
+        The 11-character id goes in both data-video-id attributes below.
+        Leave it as VIDEO_ID_HERE and the player shows a "coming soon" poster
+        instead of an error, so the page is never broken.
+      -->
+      <div class="player" data-video-id="VIDEO_ID_HERE">
+        <div class="player__frame" id="playerFrame">
+          <div class="player__poster">
+            <div class="player__posterInner">
+              <button class="player__play" type="button" aria-label="Play the Byakugan demo video">
+                <svg viewBox="0 0 68 68" aria-hidden="true" focusable="false">
+                  <circle cx="34" cy="34" r="33" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+                  <path d="M28 23.5 L47 34 L28 44.5 Z" fill="currentColor"/>
+                </svg>
+              </button>
+              <p class="player__label">Demo video</p>
+              <p class="player__hint" id="playerHint">Coming soon — check the repository for the recording.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="player__steps">
+        <li><b>Point it at a repo</b> you have never opened before.</li>
+        <li><b>Watch it read</b> every file and work out the shape.</li>
+        <li><b>Open the report</b> and see what you would have spent a week on.</li>
+      </ul>
     </div>
   </section>
 

@@ -1,14 +1,15 @@
-# Render blueprint for the Byakugan backend.
+# Render blueprint for Byakugan: the Node backend and the static landing page.
 #
-# This service is a plain long-lived Node process, not a serverless function, and
+# The backend is a plain long-lived Node process, not a serverless function, and
 # that is deliberate. backend/src/billing.js holds the token-per-minute ledger in
 # process memory so concurrent callers are paced against a single Groq account.
 # A host that keeps one process alive gets that for free; a serverless host would
 # hand every instance its own unrelated window and the account-level limit would
 # be exceeded.
 #
-# No build step: the backend has one runtime dependency (dotenv), the CLI has none,
-# and there is nothing to compile or bundle.
+# The frontend has no build step at all — landing/ is already the finished
+# artifact — so its build command is a no-op and Render just publishes the
+# directory.
 #
 # Secrets are intentionally absent. Every variable below that can carry a
 # credential must be set in the Render dashboard, marked Secret, for this file to
@@ -39,3 +40,40 @@ services:
     #
     # Leave BYAKUGAN_MOCK unset. Setting it makes every answer a fixture while
     # still looking like a healthy deployment.
+
+  - type: web
+    name: byakugan
+    runtime: static
+    rootDir: .
+    buildCommand: 'true' # no build — landing/ is already the deployable artifact
+    staticPublishPath: ./landing
+
+    # Render ignores landing/vercel.json; it is not Render's config format. The
+    # equivalent settings are spelled out here instead. The iframe sources are
+    # unaffected: they point at youtube-nocookie.com and a custom domain, never
+    # back at this origin, so SAMEORIGIN is what a YouTube embed needs.
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /index.html
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /styles.css
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /app.js
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+
+    # No region and no plan: static sites are served from Render's global CDN
+    # and have no compute plan, so both fields are rejected if set.
+    #
+    # The backend's secrets are not needed here. The frontend is static HTML.
+
