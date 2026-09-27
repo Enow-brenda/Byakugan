@@ -1,6 +1,6 @@
 {
-  "name": "byakugan237",
-  "version": "0.1.0",
+  "name": "byakugan-macgpt",
+  "version": "0.1.2",
   "description": "360° vision into any codebase — an adaptive code comprehension tool",
   "main": "lib/index.js",
   "bin": {
