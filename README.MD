@@ -186,7 +186,7 @@ byakugan chat
 
 ```bash
 nvm use            # Node 20 required — see .nvmrc
-npm install -g byakugan237
+npm install -g byakugan-macgpt
 
 byakugan doctor    # confirm the backend is reachable
 byakugan profile                        # set your skill level + intent

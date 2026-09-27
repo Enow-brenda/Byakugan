@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Byakugan — understand any codebase in one command</title>
+<meta name="description" content="You did not write it and you did not choose it. Byakugan reads the whole codebase and hands you a report, plain-English file explanations, a change-impact map, and a chat that answers from your code.">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Byakugan — understand any codebase in one command">
+<meta property="og:description" content="One command. A report you can actually read, file-by-file explanations, and a chat that answers from your code.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="brand" href="#top" aria-label="Byakugan home">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__name">Byakugan</span>
+    </a>
+    <nav class="nav__links" id="navLinks" aria-label="Primary">
+      <a href="#problem">The problem</a>
+      <a href="#features">What you get</a>
+      <a href="#how">How it works</a>
+      <a href="#bob">IBM Bob</a>
+      <a href="#team">Team</a>
+    </nav>
+    <a class="btn btn--sm btn--primary nav__cta" href="#install">Install</a>
+    <button class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow">Built for the IBM Bob 2.0 Hackathon</p>
+        <h1 class="hero__title">Understand any codebase<br><span class="grad">in one command.</span></h1>
+        <p class="hero__sub">Joining a project on Monday? Byakugan reads the whole thing for you and hands back something you can actually read — a report, plain-English explanations, a map of what breaks when you change something, and a chat that answers from your code.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#install">Install it free</a>
+          <a class="btn btn--ghost" href="#problem">Why it exists</a>
+        </div>
+        <ul class="stats">
+          <li><b>1</b><span>command to get started</span></li>
+          <li><b>0</b><span>API keys for you to set up</span></li>
+          <li><b>4</b><span>things you get back</span></li>
+        </ul>
+      </div>
+
+      <div class="hero__term reveal">
+        <div class="term">
+          <div class="term__bar">
+            <span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span>
+            <span class="term__title">a new repo, on a Monday</span>
+          </div>
+          <div class="term__body" id="termBody">
+            <p class="l"><span class="pr">&gt;</span> npm install -g byakugan-macgpt</p>
+            <p class="l"><span class="pr">&gt;</span> byakugan analyze .</p>
+            <p class="l l--dim">reading 30 files…</p>
+            <p class="l"><span class="ok">✓</span> how the project fits together</p>
+            <p class="l"><span class="ok">✓</span> what every file is for</p>
+            <p class="l"><span class="ok">✓</span> what breaks if you change things</p>
+            <p class="l"><span class="ok">✓</span> questions to check you read it</p>
+            <p class="l l--out">→ <span class="ac">open the report</span></p>
+            <p class="l l--dim l--fin">no API key needed on your side</p>
+          </div>
+        </div>
+        <p class="hero__note">Real output. It reads the code, then hands you back one page you can read in a coffee break.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="problem">
+    <div class="wrap">
+      <p class="eyebrow">the problem</p>
+      <h2 class="sec__title">The first week is silent.</h2>
+      <p class="sec__sub">Nobody explains the codebase. You open file after file, guess at the names, and slowly piece together something nobody ever wrote down.</p>
+      <div class="cards">
+        <article class="card card--bad">
+          <h3>You are guessing</h3>
+          <p>Names are abbreviated, the important logic is in three random folders, and nothing tells you where to start.</p>
+        </article>
+        <article class="card card--warn">
+          <h3>Asking costs too much</h3>
+          <p>You do not want to keep interrupting the one person who knows. So you keep guessing.</p>
+        </article>
+        <article class="card card--ac">
+          <h3>Generic answers do not help</h3>
+          <p>Explaining one file in isolation ignores the other twenty-nine. You already know how to read a function.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--alt" id="features">
+    <div class="wrap">
+      <p class="eyebrow">the solution</p>
+      <h2 class="sec__title">Point it at a folder. Get back four things.</h2>
+      <p class="sec__sub">One pass over your code, then everything after that is instant — because the understanding is already saved.</p>
+      <div class="feats">
+        <article class="feat">
+          <span class="feat__n">01</span>
+          <h3>A report worth reading</h3>
+          <p>One interactive page with the project overview, the file map, the risky spots and what to look at first. It opens in your browser and works offline.</p>
+        </article>
+        <article class="feat">
+          <span class="feat__n">02</span>
+          <h3>Any file, in plain English</h3>
+          <p>Ask about one file and get what it is for, what it depends on, and why it exists — without reading all of it first.</p>
+        </article>
+        <article class="feat">
+          <span class="feat__n">03</span>
+          <h3>Know what breaks</h3>
+          <p>Point at a file before you change it and see who depends on it. No more finding out in production.</p>
+        </article>
+        <article class="feat">
+          <span class="feat__n">04</span>
+          <h3>Ask questions like a person</h3>
+          <p>"Where is auth handled?" gets an answer from your code, not from the model's memory. Follow-ups keep the context.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="level">
+    <div class="wrap">
+      <p class="eyebrow">the bit that surprises people</p>
+      <h2 class="sec__title">It explains it your way, not one fixed way.</h2>
+      <p class="sec__sub">You say how much you know and what you are trying to do. Everything after that is pitched to match — no separate beginner version to write and maintain.</p>
+      <div class="split">
+        <article class="pane pane--ok">
+          <header><span class="tag tag--ok">new to the codebase</span> Learning it</header>
+          <p>Concepts before implementation, jargon defined, and a sensible order to read things in.</p>
+          <pre class="quote">billing.js keeps a running total of
+requests per window. when the window
+fills up it waits for it to clear.</pre>
+        </article>
+        <article class="pane pane--vein">
+          <header><span class="tag tag--vein">joining to change it</span> Reviewing it</header>
+          <p>Skips the tutorial. Tradeoffs, edge cases, and the part that will surprise you later.</p>
+          <pre class="quote">the limit is per running copy, so it
+resets on deploy. fine for one box,
+wrong the moment you scale to two.</pre>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--alt" id="how">
+    <div class="wrap">
+      <p class="eyebrow">how it works</p>
+      <h2 class="sec__title">Four steps, and you only do the first one.</h2>
+      <p class="sec__sub">It reads your project in several passes rather than one, because a single pass over a whole repository gives confident nonsense.</p>
+      <ol class="rail">
+        <li class="rail__item reveal">
+          <span class="rail__dot"></span>
+          <div>
+            <h3>You point at a folder</h3>
+            <p>That is the whole setup. No config file, no key, no choosing a model.</p>
+          </div>
+        </li>
+        <li class="rail__item reveal">
+          <span class="rail__dot"></span>
+          <div>
+            <h3>It reads everything worth reading</h3>
+            <p>Skips binaries and build output, keeps the interesting parts of very long files, and works through the rest in batches that fit.</p>
+          </div>
+        </li>
+        <li class="rail__item reveal">
+          <span class="rail__dot rail__dot--ac"></span>
+          <div>
+            <h3>It works out how the pieces fit</h3>
+            <p>What depends on what, where the risky code is, which files everything else leans on.</p>
+          </div>
+        </li>
+        <li class="rail__item reveal">
+          <span class="rail__dot rail__dot--ok"></span>
+          <div>
+            <h3>It saves the understanding</h3>
+            <p>Your report, file explanations and chat all read from the same saved result. Ask a fifth question as fast as the first.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec" id="impact">
+    <div class="wrap">
+      <p class="eyebrow">the impact</p>
+      <h2 class="sec__title">Your first day becomes your first coffee break.</h2>
+      <p class="sec__sub">The goal was never to write code for you. It is to get you from "I have no idea where to start" to making a real change.</p>
+      <div class="cards">
+        <article class="card card--ac">
+          <h3>Stop reading at random</h3>
+          <p>You get an order to read things in, so you stop opening files hoping one of them is the important one.</p>
+        </article>
+        <article class="card card--ac">
+          <h3>Ask without awkwardness</h3>
+          <p>The person who knows the codebase is not interrupted, and you are not guessing quietly for a week.</p>
+        </article>
+        <article class="card card--ac">
+          <h3>Change things more safely</h3>
+          <p>See what depends on a file before you touch it, not after something falls over.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--alt" id="bob">
+    <div class="wrap">
+      <p class="eyebrow">the hackathon</p>
+      <h2 class="sec__title">Built with IBM Bob, in 48 hours.</h2>
+      <p class="sec__sub">Byakugan was built during the IBM Bob 2.0 Hackathon. Bob was the reason we got to a working demo at all.</p>
+      <div class="bob">
+        <article class="bob__item">
+          <span class="bob__k">Planning</span>
+          <p>Bob helped us break a very large idea into a build order we could actually finish in two days.</p>
+        </article>
+        <article class="bob__item">
+          <span class="bob__k">Building</span>
+          <p>Bob sat in the loop while we wrote the scanner, the pipeline and the report, catching the parts that would not work before we wasted a night on them.</p>
+        </article>
+        <article class="bob__item">
+          <span class="bob__k">Finishing</span>
+          <p>When the project outgrew the original plan, Bob helped us rework it into the shape that shipped.</p>
+        </article>
+      </div>
+      <p class="bob__out">Two developers, one weekend, and a tool we now use on codebases we did not write.</p>
+    </div>
+  </section>
+
+  <section class="team" id="team">
+    <div class="wrap">
+      <p class="eyebrow">the team</p>
+      <h2 class="sec__title">Two people who kept inheriting codebases.</h2>
+      <p class="sec__sub">We built the thing we kept wishing existed.</p>
+
+      <!--
+        TEAM DETAILS - placeholders, replace before deploying.
+        Search this file for: TODO_TEAM
+        Photo files: drop images at landing/team/brenda.jpg and landing/team/naran.jpg
+        If a photo is missing the monogram shows instead, so nothing breaks.
+      -->
+
+      <div class="people">
+
+        <article class="person">
+          <div class="person__photo">
+            <span class="person__mono" aria-hidden="true">B</span>
+            <img src="team/brenda.jpg" alt="Brenda" width="360" height="360" loading="lazy" onerror="this.remove()">
+          </div>
+          <h3 class="person__name">Brenda</h3>
+          <p class="person__role">Lead — the CLI and how it is put together</p>
+          <p class="person__did">Built the command line tool, the scanning and batching, and the pipeline that turns a folder into a saved understanding of the project.</p>
+          <ul class="person__contact">
+            <li><a href="mailto:TODO_EMAIL_BRENDA">TODO_EMAIL_BRENDA</a></li>
+            <li><a href="https://www.linkedin.com/in/TODO_LINKEDIN_BRENDA" rel="noopener">TODO_LINKEDIN_BRENDA</a></li>
+          </ul>
+        </article>
+
+        <article class="person">
+          <div class="person__photo">
+            <span class="person__mono" aria-hidden="true">N</span>
+            <img src="team/naran.jpg" alt="Naran" width="360" height="360" loading="lazy" onerror="this.remove()">
+          </div>
+          <h3 class="person__name">Naran</h3>
+          <p class="person__role">Prompts, the report, and everything you look at</p>
+          <p class="person__did">Wrote the prompts that shape every answer, designed and built the report, and handled the visual side of the project.</p>
+          <ul class="person__contact">
+            <li><a href="mailto:TODO_EMAIL_NARAN">TODO_EMAIL_NARAN</a></li>
+            <li><a href="https://www.linkedin.com/in/TODO_LINKEDIN_NARAN" rel="noopener">TODO_LINKEDIN_NARAN</a></li>
+          </ul>
+        </article>
+
+      </div>
+
+      <div class="team__together">
+        <div class="team__row"><span>Together</span><b>The demo, the script, and the rehearsal</b></div>
+        <div class="team__row"><span>Built for</span><b>IBM Bob 2.0 Hackathon</b></div>
+        <div class="team__row"><span>Install with</span><b class="mono">npm install -g byakugan-macgpt</b></div>
+        <div class="team__row"><span>Licence</span><b>MIT</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="install">
+    <div class="wrap">
+      <p class="eyebrow">get started</p>
+      <h2 class="sec__title">Try it on something you have been avoiding.</h2>
+      <div class="install">
+        <div class="install__row">
+          <code>npm install -g byakugan-macgpt</code>
+          <button class="btn btn--sm btn--ghost" id="copyBtn" data-copy="npm install -g byakugan-macgpt">Copy</button>
+        </div>
+        <div class="install__row">
+          <code>byakugan analyze .</code>
+        </div>
+      </div>
+      <ol class="steps">
+        <li><b>Install it.</b> One command, nothing to configure.</li>
+        <li><b>Check it works.</b> <span class="mono">byakugan doctor</span> takes a second and tells you if something is wrong.</li>
+        <li><b>Point it at a project.</b> Then open the report and stop guessing.</li>
+      </ol>
+      <p class="install__note">Still a young tool, built in a weekend. If it gets something wrong on your codebase, we want to know.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__inner">
+    <div class="foot__brand">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span>Byakugan</span>
+    </div>
+    <p>Understand any codebase in one command.</p>
+    <nav class="foot__links" aria-label="Footer">
+      <a href="#features">What you get</a>
+      <a href="#how">How it works</a>
+      <a href="#bob">IBM Bob</a>
+      <a href="#team">Team</a>
+    </nav>
+    <p class="foot__fine">MIT licensed · Built for the IBM Bob 2.0 Hackathon</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

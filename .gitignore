@@ -23,7 +23,15 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Office lock files
+~$*.pptx
+~$*.docx
+~$*.xlsx
+
 # IDE files
 .idea/
 .vscode/
 *.swp
+# Python
+__pycache__/
+*.pyc
