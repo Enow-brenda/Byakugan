@@ -1,35 +1,20 @@
 {
-  "name": "byakugan237",
-  "version": "0.1.0",
-  "description": "360° vision into any codebase — an adaptive code comprehension tool",
-  "main": "lib/index.js",
-  "bin": {
-    "byakugan": "./bin/byakugan.js"
-  },
+  "name": "byakugan-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Byakugan monorepo — the npm CLI (package/) and the private LLM gateway (backend/)",
+  "license": "MIT",
+  "author": "Brenda & Naran",
+  "workspaces": [
+    "package",
+    "backend"
+  ],
   "scripts": {
-    "start": "node bin/byakugan.js",
-    "dev": "nodemon bin/byakugan.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "byakugan": "node package/bin/byakugan.js",
+    "backend": "node backend/src/index.js",
+    "backend:dev": "nodemon backend/src/index.js"
   },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "keywords": [
-    "cli",
-    "code-analysis",
-    "developer-tools",
-    "ibm-bob",
-    "watsonx"
-  ],
-  "author": "Brenda & Naran",
-  "license": "MIT",
-  "dependencies": {
-    "chalk": "^4.1.2",
-    "cli-table3": "^0.6.5",
-    "commander": "^12.0.0",
-    "dotenv": "^16.4.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.0"
   }
 }

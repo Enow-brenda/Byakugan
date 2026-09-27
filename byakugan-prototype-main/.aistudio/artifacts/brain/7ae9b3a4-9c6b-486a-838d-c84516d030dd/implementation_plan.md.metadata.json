@@ -1,6 +1,0 @@
-{
-  "summary":  "Architecture and design plan to make all workspace files interactive in the File Browser with authentic code, dynamic AST insights, and metadata, accompanied by fluid expand/contract controls for both the file tree pane and main sidebar.",
-  "updatedAt":  "2026-09-26T13:50:51.146752512Z",
-  "requestFeedback":  true,
-  "userFacing":  true
-}

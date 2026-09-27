@@ -1,0 +1,42 @@
+{
+  "name": "byakugan237",
+  "version": "0.1.0",
+  "description": "360° vision into any codebase — an adaptive code comprehension tool",
+  "main": "lib/index.js",
+  "bin": {
+    "byakugan": "./bin/byakugan.js"
+  },
+  "scripts": {
+    "start": "node bin/byakugan.js",
+    "dev": "nodemon bin/byakugan.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "cli",
+    "code-analysis",
+    "developer-tools",
+    "codebase-visualization",
+    "rag",
+    "static-analysis"
+  ],
+  "author": "Brenda & Naran",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "commander": "^12.0.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "templates/report/",
+    "README.md",
+    "LICENSE"
+  ]
+}

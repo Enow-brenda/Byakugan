@@ -1,6 +1,0 @@
-{
-  "name": "Byakugan — Codebase Intelligence & Blast-Radius Telemetry",
-  "description": "High-density codebase telemetry, AST dependency graphs, blast-radius mutation analysis, and software architectural pattern synthesis for payments-backend.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
